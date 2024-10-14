@@ -35,8 +35,11 @@ const Login = () => {
           password,
         });
         if (data.success) {
-          localStorage.setItem("token", data.token);
-          setToken(data.token); 
+          const token = data.token;
+          const expiryDate = new Date().getTime() + 24 * 60 * 60 * 1000;
+          localStorage.setItem("token", token);
+          localStorage.setItem("expiryDate", expiryDate);
+          setToken(token);
         } else {
           toast.error(data.message);
         }
@@ -48,6 +51,20 @@ const Login = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const expiryDate = localStorage.getItem("expiryDate");
+
+    if(token && expiryDate) {
+      const now = new Date().getTime();
+      if(now > expiryDate) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("expiryDate");
+        setToken(false)
+        toast.error("Session expired. Please login again.");
+      } else {
+        setToken(token)
+      }
+    }
     if (token) {
       navigate("/")
     }

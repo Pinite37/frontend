@@ -12,6 +12,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoginRedirect from './components/LoginRedirect'
 
 const App = () => {
   return (
@@ -19,7 +20,8 @@ const App = () => {
       <ToastContainer />
       <Navbar />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path="/" element={<LoginRedirect/>} />
+        {/* <Route path='/' element={<Home />} /> */}
         <Route path='/doctors' element={<Doctors />} />
         <Route path='/doctors/:speciality' element={<Doctors />} />
         <Route path='/login' element={<Login />} />
