@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { createContext, useEffect, useState } from "react"; 
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,6 +14,7 @@ const AppContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)
     const [userData, setUserData] = useState(false)
+    const navigate = useNavigate()
 
     
     const getDoctorsData = async () => {
@@ -56,6 +58,24 @@ const AppContextProvider = (props) => {
         userData, setUserData,
         loadUserProfileData 
     }
+
+    useEffect(() => {
+        const checkTokenExpiration = () => {
+            const tokenExpiration = localStorage.getItem('expiryDate');
+            if (tokenExpiration) {
+                const now = new Date().getTime();
+                if (now > parseInt(tokenExpiration, 10)) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('expiryDate');
+                    setToken(false);
+                    setUserData(false)
+                    toast.error('Session expired. Please log in again.');
+                    navigate('/login');
+                }
+            }
+        };
+        checkTokenExpiration();
+    }, [token, navigate]);
  
 
     useEffect(() => {
@@ -69,6 +89,8 @@ const AppContextProvider = (props) => {
             setUserData(false)
         }
     }, [token]) 
+
+
 
     return (
         <AppContext.Provider value={value}>
